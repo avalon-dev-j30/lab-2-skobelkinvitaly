@@ -3,6 +3,7 @@ package ru.avalon.java.j30.labs;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.*;
 import java.util.Collection;
 import java.util.Properties;
 
@@ -25,26 +26,22 @@ public class Main {
      */
     public static void main(String[] args) throws SQLException {
         try (Connection connection = getConnection()) {
-            System.out.println("Connect!");
-            ProductCode code = new ProductCode("MO", 'N', "Movies");
-            code.save(connection);
-            printAllCodes(connection);
+            Statement statement = connection.createStatement();
+            String query = "SELECT * FROM PRODUCT_CODE";
+            try (ResultSet resultset = statement.executeQuery(query)) {
+                while (resultset.next()) {
 
-            code.setCode("MV");
-            code.save(connection);
-            printAllCodes(connection);
-        }
-        /*
+                }
+                /*
          * TODO #14 Средствами отладчика проверьте корректность работы программы
-         */
-    }
-
-    /**
-     * Выводит в кодсоль все коды товаров
-     *
-     * @param connection действительное соединение с базой данных
-     * @throws SQLException
-     */
+                 */
+            }
+            /**
+             * Выводит в кодсоль все коды товаров
+             *
+             * @param connection действительное соединение с базой данных
+             * @throws SQLException
+             */
     private static void printAllCodes(Connection connection) throws SQLException {
         Collection<ProductCode> codes = ProductCode.all(connection);
         for (ProductCode code : codes) {
@@ -71,7 +68,8 @@ public class Main {
      */
     private static Properties getProperties() {
         Properties properties = new Properties();
-        properties.put("app", "app");
+        properties.put("user", "app");
+        properties.put("password", "app");
         return properties;
 //        throw new UnsupportedOperationException("Not implemented yet!");
     }
@@ -83,10 +81,7 @@ public class Main {
      * @throws SQLException
      */
     private static Connection getConnection() throws SQLException {
-        String url = getUrl();
-        Properties userAndPassword = getProperties();
-        Connection connection = DriverManager.getConnection(url, userAndPassword);
-//        throw new UnsupportedOperationException("Not implemented yet!");
+        Connection connection = DriverManager.getConnection(getUrl(), getProperties());
         return connection;
     }
 
